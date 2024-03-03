@@ -408,9 +408,6 @@ def get_customer_group_condition(pos_profile):
 
 @frappe.whitelist()
 def get_customer_names(pos_profile):
-    print("@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@")
-    print(pos_profile)
     _pos_profile = json.loads(pos_profile)
     ttl = _pos_profile.get("posa_server_cache_duration")
     if ttl:
@@ -426,7 +423,7 @@ def get_customer_names(pos_profile):
         condition += get_customer_group_condition(pos_profile)
         customers = frappe.db.sql(
             """
-            SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address,custom_customer_code
+            SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address,custom_customer_code,custom_street
             FROM `tabCustomer`
             WHERE {0}
             ORDER by name
@@ -1073,7 +1070,7 @@ def create_customer(
                     "customer_type": customer_type,
                     "gender": gender,
                     "custom_channel":custom_channel,
-                    "street_name":street_name
+                    "custom_street":street_name
                 }
             )
             if customer_group:
@@ -1101,7 +1098,7 @@ def create_customer(
         customer_doc.customer_group = customer_group
         customer_doc.gender = gender
         customer_doc.custom_channel=custom_channel
-        customer_doc.street_name=street_name
+        customer_doc.custom_street=street_name
         customer_doc.save()
         # if mobile_no != customer_doc.mobile_no:
         #     set_customer_info(customer_doc.name, "mobile_no", mobile_no)
@@ -1706,7 +1703,7 @@ def get_customer_info(customer):
     res["name"] = customer.name
     res["customer_name"] = customer.customer_name
     res["channels"]=customer.custom_channel
-    res["street"]=customer.street_name
+    res["street"]=customer.custom_street
     res["customer_group_price_list"] = frappe.get_value(
         "Customer Group", customer.customer_group, "default_price_list"
     )

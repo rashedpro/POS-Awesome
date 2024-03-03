@@ -135,9 +135,7 @@
                   background-color="white"
                   :no-data-text="__('Territory not found')"
                   hide-details
-                  required
-                  @input="getCustomerStreet"
-                >
+                  required>
                 </v-autocomplete>
               </v-col>
               <v-col cols="6">
@@ -156,21 +154,15 @@
                 >
                 </v-autocomplete>
               </v-col>
-              <v-col cols="6">
-                <v-autocomplete
-                  clearable
+              <v-col cols="12">
+                <v-text-field
                   dense
-                  auto-select-first
                   color="primary"
-                  :label="frappe._('Street Name') + ' *'"
-                  v-model="street"
-                  :items="street_name"
+                  :label="frappe._('Street') + ' *'"
                   background-color="white"
-                  :no-data-text="__('Street not found')"
                   hide-details
-                  required
-                >
-                </v-autocomplete>
+                  v-model="street"
+                ></v-text-field>
               </v-col>
               <v-col cols="6" v-if="loyalty_program">
                 <v-text-field
@@ -228,7 +220,6 @@ export default {
     channels:'',
     custom_channels:[],
     street:'',
-    street_name:[],
     genders: [],
     customer_type: 'Individual',
     gender: '',
@@ -312,25 +303,25 @@ export default {
           }
         });
     },
-    getCustomerStreet() {
-      const vm = this;
-      frappe.db
-        .get_list('Street', {
-          fields: ['name'],
-          filters: {territory:vm.territory},
-          limit: 5000,
-          order_by: 'name',
-        })
-        .then((data) => {
-          if (data.length > 0) {
-            data.forEach((el) => {
-              vm.street_name.push(el.name);
-            });
-          }else{
-            vm.street_name=[];
-          }
-        });
-    },
+    // getCustomerStreet() {
+    //   const vm = this;
+    //   frappe.db
+    //     .get_list('Street', {
+    //       fields: ['name'],
+    //       filters: {territory:vm.territory},
+    //       limit: 5000,
+    //       order_by: 'name',
+    //     })
+    //     .then((data) => {
+    //       if (data.length > 0) {
+    //         data.forEach((el) => {
+    //           vm.street_name.push(el.name);
+    //         });
+    //       }else{
+    //         vm.street_name=[];
+    //       }
+    //     });
+    // },
     getGenders() {
       const vm = this;
       frappe.db
@@ -453,6 +444,7 @@ export default {
         this.loyalty_points = data.loyalty_points;
         this.loyalty_program = data.loyalty_program;
         this.gender = data.gender;
+        this.street=data.street;
       }
     });
     evntBus.$on('register_pos_profile', (data) => {
@@ -464,7 +456,7 @@ export default {
     this.getCustomerGroups();
     this.getCustomerTerritorys();
     this.getCustomerChannels();
-    this.getCustomerStreet();
+    // this.getCustomerStreet();
     this.getGenders();
     // set default values for customer group and territory from user defaults
     this.group = frappe.defaults.get_user_default('Customer Group');
