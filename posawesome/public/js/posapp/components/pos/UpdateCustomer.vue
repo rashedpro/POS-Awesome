@@ -102,7 +102,7 @@
                     no-title
                     scrollable
                     :max="frappe.datetime.now_date()"
-                    @input="birthday_menu = false"
+                    @focus="birthday_menu = false"
                   >
                   </v-date-picker>
                 </v-menu>
@@ -128,6 +128,7 @@
                   clearable
                   dense
                   auto-select-first
+                  autofocus
                   color="primary"
                   :label="frappe._('Territory') + ' *'"
                   v-model="territory"
@@ -135,6 +136,7 @@
                   background-color="white"
                   :no-data-text="__('Territory not found')"
                   hide-details
+                  @focus="getCustomerStreet"
                   required>
                 </v-autocomplete>
               </v-col>
@@ -154,14 +156,30 @@
                 >
                 </v-autocomplete>
               </v-col>
+              <v-col cols="6">
+                <v-autocomplete
+                  clearable
+                  dense
+                  auto-select-first
+                  color="primary"
+                  :label="frappe._('Street') + ' *'"
+                  v-model="street"
+                  :items="streets"
+                  background-color="white"
+                  :no-data-text="__('Channel not found')"
+                  hide-details
+                  required
+                >
+                </v-autocomplete>
+              </v-col>
               <v-col cols="12">
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Street') + ' *'"
+                  :label="frappe._('Address') + ' *'"
                   background-color="white"
                   hide-details
-                  v-model="street"
+                  v-model="address"
                 ></v-text-field>
               </v-col>
               <v-col cols="6" v-if="loyalty_program">
@@ -220,6 +238,8 @@ export default {
     channels:'',
     custom_channels:[],
     street:'',
+    streets:[],
+    address:'',
     genders: [],
     customer_type: 'Individual',
     gender: '',
@@ -243,6 +263,7 @@ export default {
       this.territory = frappe.defaults.get_user_default('Territory');
       this.channels='';
       this.street='';
+      this.address='';
       this.customer_id = '';
       this.customer_type = 'Individual';
       this.gender = '';
@@ -303,25 +324,25 @@ export default {
           }
         });
     },
-    // getCustomerStreet() {
-    //   const vm = this;
-    //   frappe.db
-    //     .get_list('Street', {
-    //       fields: ['name'],
-    //       filters: {territory:vm.territory},
-    //       limit: 5000,
-    //       order_by: 'name',
-    //     })
-    //     .then((data) => {
-    //       if (data.length > 0) {
-    //         data.forEach((el) => {
-    //           vm.street_name.push(el.name);
-    //         });
-    //       }else{
-    //         vm.street_name=[];
-    //       }
-    //     });
-    // },
+    getCustomerStreet() {
+      const vm = this;
+      frappe.db
+        .get_list('Street', {
+          fields: ['name'],
+          filters: {territory:vm.territory},
+          limit: 5000,
+          order_by: 'name',
+        })
+        .then((data) => {
+          if (data.length > 0) {
+            data.forEach((el) => {
+              vm.streets.push(el.name);
+            });
+          }else{
+            vm.streets=[];
+          }
+        });
+    },
     getGenders() {
       const vm = this;
       frappe.db
@@ -367,10 +388,17 @@ export default {
         });
         return;
       }
-
       if (!this.street) {
         evntBus.$emit('show_mesage', {
           text: __('Customer street is required.'),
+          color: 'error',
+        });
+        return;
+      }
+
+      if (!this.address) {
+        evntBus.$emit('show_mesage', {
+          text: __('Customer address is required.'),
           color: 'error',
         });
         return;
@@ -390,6 +418,7 @@ export default {
           territory: this.territory,
           custom_channel:this.channels,
           street_name:this.street,
+          custom_address:this.address,
           customer_type: this.customer_type,
           gender: this.gender,
           method: this.customer_id ? 'update' : 'create',
@@ -441,10 +470,11 @@ export default {
         this.group = data.customer_group;
         this.territory = data.territory;
         this.channels=data.channels;
+        this.street=data.street;
         this.loyalty_points = data.loyalty_points;
         this.loyalty_program = data.loyalty_program;
         this.gender = data.gender;
-        this.street=data.street;
+        this.address=data.address;
       }
     });
     evntBus.$on('register_pos_profile', (data) => {
@@ -456,7 +486,7 @@ export default {
     this.getCustomerGroups();
     this.getCustomerTerritorys();
     this.getCustomerChannels();
-    // this.getCustomerStreet();
+    this.getCustomerStreet();
     this.getGenders();
     // set default values for customer group and territory from user defaults
     this.group = frappe.defaults.get_user_default('Customer Group');
