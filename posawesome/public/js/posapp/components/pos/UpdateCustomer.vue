@@ -47,7 +47,7 @@
                   v-model="mobile_no"
                 ></v-text-field>
               </v-col>
-              <v-col cols="6">
+              <!-- <v-col cols="6">
                 <v-text-field
                   dense
                   color="primary"
@@ -74,8 +74,8 @@
                   hide-details
                   v-model="referral_code"
                 ></v-text-field>
-              </v-col>
-              <v-col cols="6">
+              </v-col> -->
+              <!-- <v-col cols="6">
                 <v-menu
                   ref="birthday_menu"
                   v-model="birthday_menu"
@@ -106,7 +106,7 @@
                   >
                   </v-date-picker>
                 </v-menu>
-              </v-col>
+              </v-col> -->
               <v-col cols="6">
                 <v-autocomplete
                   clearable
@@ -170,8 +170,18 @@
                   hide-details
                   required
                 >
-                </v-autocomplete>
+                </v-autocomplete> 
               </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  dense
+                  color="primary"
+                  :label="frappe._('CR Number')"
+                  background-color="white"
+                  hide-details
+                  v-model="cr_number"
+                ></v-text-field>
+            </v-col>
               <v-col cols="12">
                 <v-text-field
                   dense
@@ -227,10 +237,10 @@ export default {
     customer_name: '',
     tax_id: '',
     mobile_no: '',
-    email_id: '',
-    referral_code: '',
-    birthday: null,
-    birthday_menu: false,
+    // email_id: '',
+    // referral_code: '',
+    // birthday: null,
+    // birthday_menu: false,
     group: '',
     groups: [],
     territory: '',
@@ -245,6 +255,7 @@ export default {
     gender: '',
     loyalty_points: null,
     loyalty_program: null,
+    cr_number:'',
   }),
   watch: {},
   methods: {
@@ -256,9 +267,9 @@ export default {
       this.customer_name = '';
       this.tax_id = '';
       this.mobile_no = '';
-      this.email_id = '';
-      this.referral_code = '';
-      this.birthday = '';
+      // this.email_id = '';
+      // this.referral_code = '';
+      // this.birthday = '';
       this.group = frappe.defaults.get_user_default('Customer Group');
       this.territory = frappe.defaults.get_user_default('Territory');
       this.channels='';
@@ -269,6 +280,7 @@ export default {
       this.gender = '';
       this.loyalty_points = null;
       this.loyalty_program = null;
+      this.cr_number='';
     },
     getCustomerGroups() {
       if (this.groups.length > 0) return;
@@ -411,9 +423,9 @@ export default {
           company: this.pos_profile.company,
           tax_id: this.tax_id,
           mobile_no: this.mobile_no,
-          email_id: this.email_id,
-          referral_code: this.referral_code,
-          birthday: this.birthday,
+          // email_id: this.email_id,
+          // referral_code: this.referral_code,
+          // birthday: this.birthday,
           customer_group: this.group,
           territory: this.territory,
           custom_channel:this.channels,
@@ -423,6 +435,7 @@ export default {
           gender: this.gender,
           method: this.customer_id ? 'update' : 'create',
           pos_profile_doc: this.pos_profile,
+          cr_number:this.cr_number,
         };
         frappe.call({
           method: 'posawesome.posawesome.api.posapp.create_customer',
@@ -464,9 +477,9 @@ export default {
         this.customer_id = data.name;
         this.tax_id = data.tax_id;
         this.mobile_no = data.mobile_no;
-        this.email_id = data.email_id;
-        this.referral_code = data.referral_code;
-        this.birthday = data.birthday;
+        // this.email_id = data.email_id;
+        // this.referral_code = data.referral_code;
+        // this.birthday = data.birthday;
         this.group = data.customer_group;
         this.territory = data.territory;
         this.channels=data.channels;
@@ -475,6 +488,7 @@ export default {
         this.loyalty_program = data.loyalty_program;
         this.gender = data.gender;
         this.address=data.address;
+        this.cr_number=data.cr_number;
       }
     });
     evntBus.$on('register_pos_profile', (data) => {

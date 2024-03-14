@@ -1052,6 +1052,7 @@ def create_customer(
     gender=None,
     custom_address=None,
     street_name=None,
+    cr_number=None,
     method="create",
 
 ):
@@ -1073,7 +1074,8 @@ def create_customer(
                     "gender": gender,
                     "custom_channel":custom_channel,
                     "custom_address":custom_address,
-                    "street_name":street_name
+                    "street_name":street_name,
+                    "cr_number":cr_number,
                 }
             )
             if customer_group:
@@ -1103,6 +1105,7 @@ def create_customer(
         customer_doc.custom_channel=custom_channel
         customer_doc.custom_address=custom_address
         customer_doc.street_name=street_name
+        customer_doc.cr_number=cr_number
         customer_doc.save()
         # if mobile_no != customer_doc.mobile_no:
         #     set_customer_info(customer_doc.name, "mobile_no", mobile_no)
@@ -1709,6 +1712,7 @@ def get_customer_info(customer):
     res["channels"]=customer.custom_channel
     res["address"]=customer.custom_address
     res["street"]=customer.street_name
+    res["cr_number"]=customer.cr_number
     res["customer_group_price_list"] = frappe.get_value(
         "Customer Group", customer.customer_group, "default_price_list"
     )
