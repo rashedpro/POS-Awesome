@@ -86,6 +86,10 @@
                       {{ currencySymbol(item.currency) || "" }}
                       {{ formtCurrency(item.rate) || 0 }}
                     </div>
+                    <div class="text-caption ">
+                      {{ currencySymbol(item.currency) || "" }}
+                      {{ formtCurrency(item.rate+item.rate*15/100) || 0 }}
+                    </div>
                     <div class="text-caption golden--text">
                       {{ formtFloat(item.actual_qty) || 0 }}
                       {{ item.stock_uom || "" }}
